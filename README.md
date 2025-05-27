@@ -2,7 +2,9 @@
 
 A secure React Native transaction history module built with TypeScript and Tamagui, featuring biometric authentication for sensitive financial data protection.
 
-![login screen](assets/sample-screenshot/IMG_0298.PNG) ![transaction history screen](assets/sample-screenshot/IMG_0299.PNG) ![detailed transaction screen](assets/sample-screenshot/IMG_0300.PNG)
+[<img src="assets/sample-screenshot/IMG_0298.PNG" width="200"/>](assets/sample-screenshot/IMG_0298.PNG) 
+[<img src="assets/sample-screenshot/IMG_0299.PNG" width="200"/>](assets/sample-screenshot/IMG_0299.PNG)
+[<img src="assets/sample-screenshot/IMG_0300.PNG" width="200"/>](assets/sample-screenshot/IMG_0300.PNG)
 
 ## Features
 
