@@ -165,18 +165,9 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
             </Text>
           </YStack>
           
-          <XStack space="$2">
+          <XStack gap="$2">
             <Button
-              size="$3"
-              chromeless
-              icon={Search}
-              onPress={() => {
-                // TODO: Implement search functionality
-                Alert.alert('Search', 'Search functionality coming soon!');
-              }}
-            />
-            <Button
-              size="$3"
+              size="$6"
               chromeless
               icon={LogOut}
               onPress={handleLogout}
