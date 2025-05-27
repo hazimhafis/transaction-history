@@ -55,6 +55,8 @@ transaction-history/
 - **Tamagui**: Modern UI library with theming
 - **Expo**: Development platform and tools
 
+## Prerequisite
+Install [Expo Go](https://expo.dev/go) App to your smartphone.
 
 ## Installation & Setup
 
