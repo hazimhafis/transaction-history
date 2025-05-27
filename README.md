@@ -15,7 +15,7 @@ A secure React Native transaction history module built with TypeScript and Tamag
 - **Secure Storage**: Authentication state persisted securely
 
 ### 📱 User Interface
-- **Modern Design**: Built with Tamagui for consistent, beautiful UI
+- **Modern Design**: Built with [Tamagui](https://tamagui.dev/docs/intro/introduction) for consistent, beautiful UI
 
 ### 💳 Transaction Management
 - **Transaction List**: Paginated list with pull-to-refresh
