@@ -100,7 +100,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
         >
-          <XStack alignItems="center" space="$3">
+          <XStack alignItems="center" gap="$3">
             <Button
               size="$3"
               chromeless
@@ -113,7 +113,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           </XStack>
           
           <Button
-            size="$3"
+            size="$6"
             chromeless
             icon={showSensitiveData ? EyeOff : Eye}
             onPress={handleToggleSensitiveData}
@@ -123,11 +123,11 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
         </XStack>
 
         <ScrollView style={{ flex: 1 }}>
-          <YStack padding="$4" space="$4">
+          <YStack padding="$4" gap="$4">
             {/* Main Transaction Card */}
             <Card elevate size="$4" bordered backgroundColor="$background">
               <Card.Header>
-                <YStack space="$3" alignItems="center">
+                <YStack gap="$3" alignItems="center">
                   {/* Transaction Icon */}
                   <YStack
                     width={60}
@@ -177,7 +177,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             {/* Transaction Details */}
             <Card elevate size="$4" bordered backgroundColor="$background">
               <Card.Header>
-                <YStack space="$2">
+                <YStack gap="$2">
                   <Text fontSize="$5" fontWeight="600" color="$color" marginBottom="$2">
                     Transaction Information
                   </Text>
@@ -212,7 +212,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             {/* Security Notice */}
             <Card elevate size="$4" bordered backgroundColor="$backgroundHover">
               <Card.Header>
-                <YStack space="$2">
+                <YStack gap="$2">
                   <Text fontSize="$4" fontWeight="600" color="$color">
                     🔒 Security Notice
                   </Text>
