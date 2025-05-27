@@ -70,14 +70,14 @@ transaction-history/
    pnpm start
    ```
 
-4. **Run on device/simulator**
-   ```bash
-   # iOS
-   pnpm ios
-   
-   # Android
-   pnpm android
-   ```
+4. **Scan the QR code and test the app on your mobile device**
+
+##Known Limitation for iOS Face ID in Expo Go
+- The FaceID authentication for iOS is not supported in Expo Go. So it will trigger the passcode by default
+- https://docs.expo.dev/versions/latest/sdk/local-authentication/#ios
+  
+
+
 
 ## Usage
 
@@ -151,35 +151,6 @@ interface Transaction {
 4. **Error Handling**: No sensitive data exposed in error messages
 5. **Local Storage**: Authentication state encrypted in AsyncStorage
 
-## Development Notes
-
-### Code Quality
-- **TypeScript**: Full type safety throughout the application
-- **Error Boundaries**: Comprehensive error handling
-- **Service Pattern**: Clean separation of concerns
-- **Singleton Services**: Efficient resource management
-
-### Performance
-- **Pagination**: Efficient loading of large transaction lists
-- **Lazy Loading**: Components loaded as needed
-- **Optimized Rendering**: Efficient list rendering with FlatList
-- **Memory Management**: Proper cleanup and resource management
-
-### Accessibility
-- **Screen Reader Support**: Proper accessibility labels
-- **High Contrast**: Theme support for accessibility
-- **Touch Targets**: Appropriate button sizes
-- **Navigation**: Clear navigation patterns
-
-## Future Enhancements
-
-- [ ] Search and filter functionality
-- [ ] Export transaction data
-- [ ] Transaction categorization
-- [ ] Spending analytics
-- [ ] Push notifications
-- [ ] Offline support
-- [ ] Multi-account support
 
 ## License
 
