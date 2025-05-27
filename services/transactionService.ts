@@ -103,16 +103,16 @@ export class TransactionService {
 
   formatAmount(amount: number): string {
     const absAmount = Math.abs(amount);
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-MY', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'MYR',
       minimumFractionDigits: 2,
     }).format(absAmount);
   }
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('en-MY', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
