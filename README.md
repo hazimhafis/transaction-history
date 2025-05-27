@@ -76,7 +76,7 @@ transaction-history/
 
 4. **Scan the QR code and test the app on your mobile device**
 
-##Known Limitation for iOS Face ID in Expo Go
+## Known Limitation for iOS Face ID in Expo Go
 - The FaceID authentication for iOS is not supported in Expo Go. So it will trigger the passcode by default
 - https://docs.expo.dev/versions/latest/sdk/local-authentication/#ios
   
