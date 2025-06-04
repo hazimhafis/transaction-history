@@ -56,8 +56,8 @@ transaction-history/
 - **Expo**: Development platform and tools
 
 ## Prerequisite
-Install [Node](https://nodejs.org/en) in your system 
-Install [Expo Go](https://expo.dev/go) App to your smartphone.
+- Install [Node](https://nodejs.org/en) in your system.
+- Install [Expo Go](https://expo.dev/go) App to your smartphone.
 
 ## Installation & Setup
 
