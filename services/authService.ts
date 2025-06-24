@@ -3,8 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthenticationState, AppError } from '../types/transaction';
 
 const AUTH_STORAGE_KEY = 'auth_state';
-const AUTH_TIMEOUT = 5 * 60 * 1000; // 5 minutes
-
+const AUTH_TIMEOUT = 1 * 60 * 1000;
 export class AuthService {
   private static instance: AuthService;
   private authState: AuthenticationState = {
@@ -132,6 +131,7 @@ export class AuthService {
     // Check if authentication has expired
     const isExpired = Date.now() - this.authState.lastAuthTime > AUTH_TIMEOUT;
     if (isExpired) {
+      console.log('Authentication expired');
       this.authState.isAuthenticated = false;
       this.authState.lastAuthTime = undefined;
       this.saveAuthState().catch(console.error);
