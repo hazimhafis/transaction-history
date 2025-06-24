@@ -31,10 +31,14 @@ A secure React Native transaction history module built with TypeScript and Tamag
 
 ```
 transaction-history/
+├── assets/
+│   └── ...
 ├── components/
 │   └── TransactionItem.tsx          # Individual transaction list item
 ├── data/
 │   └── mockTransactions.ts          # Sample transaction data (25+ transactions)
+├── hooks/
+│   └── AuthContext.tsx             # Custom React hooks and context providers (e.g., AuthContext)
 ├── screens/
 │   ├── LoginScreen.tsx              # Biometric authentication screen
 │   ├── TransactionHistoryScreen.tsx # Main transaction list screen
@@ -47,6 +51,28 @@ transaction-history/
 ├── tamagui.config.ts                # UI theme configuration
 └── App.tsx                          # Main application component
 ```
+
+## Directory Structure
+
+- `components/` - Reusable UI components
+- `screens/` - App screens (Login, Transaction History, etc.)
+- `services/` - Business logic and API services
+- `data/` - Mock data
+- `hooks/` - Custom React hooks and context providers (e.g., AuthContext for authentication state)
+- `types/` - TypeScript type definitions
+
+## Authentication State Management
+
+The app uses a global authentication context located in `hooks/AuthContext.tsx` to manage authentication state and session timeout. Protected screens use the `useAuth` hook to access authentication status and handle automatic logout when the session expires.
+
+**Usage Example:**
+```tsx
+import { useAuth } from './hooks/AuthContext';
+
+const { isAuthenticated } = useAuth();
+```
+
+Wrap protected screens with `AuthProvider` and pass an `onLogout` handler to handle session expiration and logout.
 
 ## Technology Stack
 
@@ -108,7 +134,7 @@ transaction-history/
 ### Security Features
 - Amounts are masked by default with "****"
 - Biometric authentication required to reveal sensitive data
-- Automatic session timeout after 5 minutes
+- Automatic session timeout after 1 minute
 - Secure logout functionality
 
 ## Sample Data
