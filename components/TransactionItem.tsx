@@ -95,7 +95,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
       backgroundColor="$background"
     >
       <Card.Header>
-        <XStack space="$4" alignItems="center">
+        <XStack gap="$4" alignItems="center">
           {/* Transaction Icon */}
           <YStack
             width={40}
@@ -111,7 +111,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
           </YStack>
 
           {/* Transaction Details */}
-          <YStack flex={1} space="$1">
+          <YStack flex={1} gap="$1">
             <Text fontSize="$5" fontWeight="600" color="$color">
               {transaction.description}
             </Text>
@@ -124,7 +124,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
           </YStack>
 
           {/* Amount and Eye Icon */}
-          <YStack alignItems="flex-end" space="$2">
+          <YStack alignItems="flex-end" gap="$2">
             <Text
               fontSize="$5"
               fontWeight="600"
