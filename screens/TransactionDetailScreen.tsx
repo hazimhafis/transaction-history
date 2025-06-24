@@ -9,6 +9,7 @@ import { ArrowLeft, Eye, EyeOff } from '@tamagui/lucide-icons';
 import { Transaction } from '../types/transaction';
 import { AuthService } from '../services/authService';
 import { TransactionService } from '../services/transactionService';
+import { useAuth } from '../hooks/AuthContext';
 
 interface TransactionDetailScreenProps {
   transaction: Transaction;
@@ -24,6 +25,13 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
   
   const authService = AuthService.getInstance();
   const transactionService = TransactionService.getInstance();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      onBack();
+    }
+  }, [isAuthenticated, onBack]);
 
   const handleToggleSensitiveData = async () => {
     if (showSensitiveData) {

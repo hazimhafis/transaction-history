@@ -6,6 +6,7 @@ import { Transaction } from './types/transaction';
 import { LoginScreen } from './screens/LoginScreen';
 import { TransactionHistoryScreen } from './screens/TransactionHistoryScreen';
 import { TransactionDetailScreen } from './screens/TransactionDetailScreen';
+import { AuthProvider } from './hooks/AuthContext';
 
 type Screen = 'login' | 'history' | 'detail';
 
@@ -39,18 +40,22 @@ export default function App() {
       
       case 'history':
         return (
-          <TransactionHistoryScreen
-            onTransactionPress={handleTransactionPress}
-            onLogout={handleLogout}
-          />
+          <AuthProvider onLogout={handleLogout}>
+            <TransactionHistoryScreen
+              onTransactionPress={handleTransactionPress}
+              onLogout={handleLogout}
+            />
+          </AuthProvider>
         );
       
       case 'detail':
         return selectedTransaction ? (
-          <TransactionDetailScreen
-            transaction={selectedTransaction}
-            onBack={handleBackToHistory}
-          />
+          <AuthProvider onLogout={handleLogout}>
+            <TransactionDetailScreen
+              transaction={selectedTransaction}
+              onBack={handleBackToHistory}
+            />
+          </AuthProvider>
         ) : null;
       
       default:

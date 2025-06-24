@@ -9,6 +9,7 @@ import { Transaction, TransactionListResponse } from '../types/transaction';
 import { TransactionService } from '../services/transactionService';
 import { AuthService } from '../services/authService';
 import { TransactionItem } from '../components/TransactionItem';
+import { useAuth } from '../hooks/AuthContext';
 
 interface TransactionHistoryScreenProps {
   onTransactionPress: (transaction: Transaction) => void;
@@ -29,6 +30,7 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
 
   const transactionService = TransactionService.getInstance();
   const authService = AuthService.getInstance();
+  const { isAuthenticated } = useAuth();
 
   const loadTransactions = useCallback(async (page: number = 1, append: boolean = false) => {
     try {
@@ -102,6 +104,13 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
   useEffect(() => {
     loadTransactions();
   }, [loadTransactions]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      onLogout();
+    }
+  }, [isAuthenticated, onLogout]);
 
   const renderTransactionItem = ({ item }: { item: Transaction }) => (
     <TransactionItem
