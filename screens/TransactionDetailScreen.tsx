@@ -7,7 +7,6 @@ import { Button } from '@tamagui/button';
 import { Card } from '@tamagui/card';
 import { ArrowLeft, Eye, EyeOff } from '@tamagui/lucide-icons';
 import { Transaction } from '../types/transaction';
-import { AuthService } from '../services/authService';
 import { TransactionService } from '../services/transactionService';
 import { useAuth } from '../hooks/AuthContext';
 
@@ -23,9 +22,11 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
   const [showSensitiveData, setShowSensitiveData] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   
-  const authService = AuthService.getInstance();
   const transactionService = TransactionService.getInstance();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isTransactionAuthenticated, authenticateForTransaction } = useAuth();
+
+  // Check if this transaction is already authenticated
+  const isAlreadyAuthenticated = isTransactionAuthenticated(transaction.id);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -39,9 +40,15 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
       return;
     }
 
+    // If already authenticated for this transaction, show immediately
+    if (isAlreadyAuthenticated) {
+      setShowSensitiveData(true);
+      return;
+    }
+
     setIsAuthenticating(true);
     try {
-      const success = await authService.authenticateWithBiometrics();
+      const success = await authenticateForTransaction(transaction.id);
       if (success) {
         setShowSensitiveData(true);
       }
@@ -57,7 +64,9 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
   };
 
   const formatAmount = (amount: number) => {
-    if (!showSensitiveData) {
+    // Show amount if either locally shown or authenticated for this transaction
+    const shouldShowAmount = showSensitiveData || isAlreadyAuthenticated;
+    if (!shouldShowAmount) {
       return '****';
     }
     
@@ -66,36 +75,45 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
   };
 
   const getAmountColor = () => {
-    if (!showSensitiveData) {
+    // Show color if either locally shown or authenticated for this transaction
+    const shouldShowAmount = showSensitiveData || isAlreadyAuthenticated;
+    if (!shouldShowAmount) {
       return '$color';
     }
     return transaction.type === 'debit' ? '$red10' : '$green10';
   };
 
   const formatBalance = (balance?: number) => {
-    if (!showSensitiveData || !balance) {
+    // Show balance if either locally shown or authenticated for this transaction
+    const shouldShowAmount = showSensitiveData || isAlreadyAuthenticated;
+    if (!shouldShowAmount || !balance) {
       return '****';
     }
     
     return transactionService.formatAmount(balance);
   };
 
-  const DetailRow = ({ label, value, sensitive = false }: { label: string; value: string; sensitive?: boolean }) => (
-    <XStack justifyContent="space-between" alignItems="center" paddingVertical="$2">
-      <Text fontSize="$4" color="$colorSubtle" flex={1}>
-        {label}
-      </Text>
-      <Text 
-        fontSize="$4" 
-        fontWeight="500" 
-        color={sensitive && !showSensitiveData ? '$colorSubtle' : '$color'}
-        flex={2}
-        textAlign="right"
-      >
-        {sensitive && !showSensitiveData ? '****' : value}
-      </Text>
-    </XStack>
-  );
+  const DetailRow = ({ label, value, sensitive = false }: { label: string; value: string; sensitive?: boolean }) => {
+    // Show sensitive data if either locally shown or authenticated for this transaction
+    const shouldShowSensitive = showSensitiveData || isAlreadyAuthenticated;
+    
+    return (
+      <XStack justifyContent="space-between" alignItems="center" paddingVertical="$2">
+        <Text fontSize="$4" color="$colorSubtle" flex={1}>
+          {label}
+        </Text>
+        <Text 
+          fontSize="$4" 
+          fontWeight="500" 
+          color={sensitive && !shouldShowSensitive ? '$colorSubtle' : '$color'}
+          flex={2}
+          textAlign="right"
+        >
+          {sensitive && !shouldShowSensitive ? '****' : value}
+        </Text>
+      </XStack>
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -123,7 +141,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           <Button
             size="$6"
             chromeless
-            icon={showSensitiveData ? EyeOff : Eye}
+            icon={(showSensitiveData || isAlreadyAuthenticated) ? EyeOff : Eye}
             onPress={handleToggleSensitiveData}
             disabled={isAuthenticating}
             opacity={isAuthenticating ? 0.5 : 1}

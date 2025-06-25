@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { FlatList, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@tamagui/core';
 import { YStack, XStack } from '@tamagui/stacks';
 import { Button } from '@tamagui/button';
-import { Search, LogOut } from '@tamagui/lucide-icons';
-import { Transaction, TransactionListResponse } from '../types/transaction';
+import { LogOut } from '@tamagui/lucide-icons';
+import { Transaction, TransactionListResponse, TransactionCategory } from '../types/transaction';
 import { TransactionService } from '../services/transactionService';
 import { AuthService } from '../services/authService';
 import { TransactionItem } from '../components/TransactionItem';
+import { TransactionSearchFilter } from '../components/TransactionSearchFilter';
 import { useAuth } from '../hooks/AuthContext';
 
 interface TransactionHistoryScreenProps {
@@ -27,10 +28,43 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<TransactionCategory | 'all'>('all');
 
   const transactionService = TransactionService.getInstance();
   const authService = AuthService.getInstance();
   const { isAuthenticated } = useAuth();
+
+  // Filter transactions based on search query and category
+  const filteredTransactions = useMemo(() => {
+    let filtered = transactions;
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(transaction =>
+        transaction.description.toLowerCase().includes(query) ||
+        transaction.merchant?.toLowerCase().includes(query) ||
+        transaction.category.toLowerCase().includes(query) ||
+        transaction.reference?.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(transaction => transaction.category === selectedCategory);
+    }
+
+    return filtered;
+  }, [transactions, searchQuery, selectedCategory]);
+
+  // Clear filters handler
+  const handleClearFilters = useCallback(() => {
+    setSearchQuery('');
+    setSelectedCategory('all');
+  }, []);
 
   const loadTransactions = useCallback(async (page: number = 1, append: boolean = false) => {
     try {
@@ -74,10 +108,12 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
   }, [transactionService, loadTransactions]);
 
   const handleLoadMore = useCallback(() => {
-    if (!isLoadingMore && hasMore) {
+    // Only allow pagination when no filters are active
+    const hasActiveFilters = searchQuery.trim().length > 0 || selectedCategory !== 'all';
+    if (!isLoadingMore && hasMore && !hasActiveFilters) {
       loadTransactions(currentPage + 1, true);
     }
-  }, [isLoadingMore, hasMore, currentPage, loadTransactions]);
+  }, [isLoadingMore, hasMore, currentPage, loadTransactions, searchQuery, selectedCategory]);
 
   const handleLogout = useCallback(async () => {
     Alert.alert(
@@ -120,7 +156,12 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
   );
 
   const renderFooter = () => {
+    const hasActiveFilters = searchQuery.trim().length > 0 || selectedCategory !== 'all';
+    
     if (!isLoadingMore) return null;
+    
+    // Don't show loading footer when filtering
+    if (hasActiveFilters) return null;
     
     return (
       <YStack padding="$4" alignItems="center">
@@ -129,17 +170,26 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
     );
   };
 
-  const renderEmptyState = () => (
-    <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
-      <Text fontSize="$6" marginBottom="$2">💳</Text>
-      <Text fontSize="$5" fontWeight="600" marginBottom="$2" textAlign="center">
-        No Transactions Found
-      </Text>
-      <Text fontSize="$3" color="$colorSubtle" textAlign="center">
-        Your transaction history will appear here once you make some transactions.
-      </Text>
-    </YStack>
-  );
+  const renderEmptyState = () => {
+    const hasActiveFilters = searchQuery.trim().length > 0 || selectedCategory !== 'all';
+    
+    return (
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+        <Text fontSize="$6" marginBottom="$2">
+          {hasActiveFilters ? '🔍' : '💳'}
+        </Text>
+        <Text fontSize="$5" fontWeight="600" marginBottom="$2" textAlign="center">
+          {hasActiveFilters ? 'No Matching Transactions' : 'No Transactions Found'}
+        </Text>
+        <Text fontSize="$3" color="$colorSubtle" textAlign="center">
+          {hasActiveFilters 
+            ? 'Try adjusting your search or filter criteria.' 
+            : 'Your transaction history will appear here once you make some transactions.'
+          }
+        </Text>
+      </YStack>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -170,7 +220,7 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
               Transactions
             </Text>
             <Text fontSize="$3" color="$colorSubtle">
-              {transactions.length} transactions
+              {filteredTransactions.length} of {transactions.length} transactions
             </Text>
           </YStack>
           
@@ -184,10 +234,19 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
           </XStack>
         </XStack>
 
+        {/* Search and Filter */}
+        <TransactionSearchFilter
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          onClearFilters={handleClearFilters}
+        />
+
         {/* Transaction List */}
         <YStack flex={1}>
           <FlatList
-            data={transactions}
+            data={filteredTransactions}
             renderItem={renderTransactionItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ 
