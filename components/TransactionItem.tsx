@@ -6,8 +6,8 @@ import { XStack, YStack } from '@tamagui/stacks';
 import { Button } from '@tamagui/button';
 import { Eye, EyeOff } from '@tamagui/lucide-icons';
 import { Transaction } from '../types/transaction';
-import { AuthService } from '../services/authService';
 import { TransactionService } from '../services/transactionService';
+import { useAuth } from '../hooks/AuthContext';
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -23,7 +23,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
   const [showAmount, setShowAmount] = useState(initialShowAmount);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   
-  const authService = AuthService.getInstance();
+  const { isTransactionAuthenticated, authenticateForTransaction } = useAuth();
   const transactionService = TransactionService.getInstance();
 
   const handleToggleAmount = async () => {
@@ -32,9 +32,15 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
       return;
     }
 
+    // If already authenticated for this transaction, show amount immediately
+    if (isTransactionAuthenticated(transaction.id)) {
+      setShowAmount(true);
+      return;
+    }
+
     setIsAuthenticating(true);
     try {
-      const success = await authService.authenticateWithBiometrics();
+      const success = await authenticateForTransaction(transaction.id);
       if (success) {
         setShowAmount(true);
       }
@@ -50,7 +56,9 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
   };
 
   const formatAmount = (amount: number) => {
-    if (!showAmount) {
+    // Show amount if either locally shown or authenticated for this transaction
+    const shouldShowAmount = showAmount || isTransactionAuthenticated(transaction.id);
+    if (!shouldShowAmount) {
       return '****';
     }
     
@@ -59,7 +67,9 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
   };
 
   const getAmountColor = () => {
-    if (!showAmount) {
+    // Show color if either locally shown or authenticated for this transaction
+    const shouldShowAmount = showAmount || isTransactionAuthenticated(transaction.id);
+    if (!shouldShowAmount) {
       return '$color';
     }
     return transaction.type === 'debit' ? '$red10' : '$green10';
@@ -136,7 +146,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
             <Button
               size="$2"
               chromeless
-              icon={showAmount ? EyeOff : Eye}
+              icon={(showAmount || isTransactionAuthenticated(transaction.id)) ? EyeOff : Eye}
               onPress={handleToggleAmount}
               disabled={isAuthenticating}
               opacity={isAuthenticating ? 0.5 : 1}
